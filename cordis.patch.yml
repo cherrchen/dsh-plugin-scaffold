@@ -1,0 +1,26 @@
+# DSH plugin scaffold bundle: mount the compatibility gate, the plugin's host
+# half, and the bare-name client-graph anchor.
+#
+# This plugin widens nothing on its own. Every row that consumes a host
+# service injects `dshPluginScaffoldCompat`, so a harness whose DSH release is
+# not on this plugin's allowlist degrades to "plugin not installed" instead of
+# running against an unverified shape.
+#
+# The last row is the client-graph anchor: the web client-module scan reads a
+# package's `dsh.client` declaration only from a loader row mounted at the
+# bare package name (subpath rows are never client rows), so this no-op
+# carrier row is what gets `lib/client.js` served to the browser.
+- insert:
+    # The compatibility gate comes first, and every widened-authority row
+    # below injects `dshPluginScaffoldCompat`. If the installed DSH release is
+    # not on this plugin's allowlist, this row throws and none of them start.
+    - id: dsh-plugin-scaffold-compat
+      name: '@dsh-electron/dsh-plugin-scaffold/compat'
+    # The plugin's host half: registers the host service where a host Context
+    # exists — a headless profile mounts it with no visible effect.
+    - id: dsh-plugin-scaffold-service
+      name: '@dsh-electron/dsh-plugin-scaffold/service'
+    # The client-graph anchor: mounted at the bare package name so the web
+    # client-module scan reads this package's `dsh.client` declaration.
+    - id: dsh-plugin-scaffold-client
+      name: '@dsh-electron/dsh-plugin-scaffold'
